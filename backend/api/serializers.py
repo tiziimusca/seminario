@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.apps import apps
-from .models import Clase
+from .models import Clase, User
 
 # Generador automático de serializers para todos los modelos
 model_list = apps.get_app_config('api').get_models()
@@ -48,6 +48,28 @@ class ClaseSerializer(serializers.ModelSerializer):
             return {}
 
         base_url = request.build_absolute_uri(f"/api/clase/{obj.pk}/")
+        return {
+            "self": base_url,
+            "update": base_url,
+            "delete": base_url
+        }
+    
+class userSerializer(serializers.ModelSerializer):
+    """
+    Serializer para la tabla user con enlaces HATEOAS.
+    """
+    links = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = [f.name for f in model._meta.fields] + ['links']
+
+    def get_links(self, obj):
+        request = self.context.get('request')
+        if not request:
+            return {}
+
+        base_url = request.build_absolute_uri(f"/api/user/{obj.pk}/")
         return {
             "self": base_url,
             "update": base_url,
