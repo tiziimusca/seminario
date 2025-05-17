@@ -18,12 +18,12 @@ for model in models:
     serializer_class = type(
         f"{model.__name__}Serializer", (serializers.ModelSerializer,), {"Meta": Meta})
     serializers_dict[model.__name__] = serializer_class
-    
+
 for model in model_list:
     class Meta:
         model = model
         fields = '__all__'
-    
+
     serializer_class = type(
         f'{model.__name__}Serializer',
         (serializers.ModelSerializer,),
@@ -53,8 +53,9 @@ class ClaseSerializer(serializers.ModelSerializer):
             "update": base_url,
             "delete": base_url
         }
-    
-class userSerializer(serializers.ModelSerializer):
+
+
+class UserSerializer(serializers.ModelSerializer):
     """
     Serializer para la tabla user con enlaces HATEOAS.
     """
@@ -76,6 +77,7 @@ class userSerializer(serializers.ModelSerializer):
             "delete": base_url
         }
 
+
 class PropuestaSerializer(serializers.ModelSerializer):
     """
     Serializer para la tabla Propuesta con enlaces HATEOAS.
@@ -85,8 +87,8 @@ class PropuestaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Propuesta
         fields = [f.name for f in model._meta.fields] + ['links']
-        read_only_fields = ['state' ] #cuando se implemete la autentificacion agregar, userId
-
+        # cuando se implemete la autentificacion agregar, userId
+        read_only_fields = ['state']
 
     def get_links(self, obj):
         request = self.context.get('request')

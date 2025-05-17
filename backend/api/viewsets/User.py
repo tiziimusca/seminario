@@ -4,7 +4,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 from ..models import User
-from ..serializers import userSerializer
+from ..serializers import UserSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from api.filters import UserFilter
 
@@ -14,21 +14,22 @@ unauthorized_response = OpenApiResponse(
 )
 
 not_found_response = OpenApiResponse(
-	response={"detail": "No encontrado"},
-	description="No encontrado"
+    response={"detail": "No encontrado"},
+    description="No encontrado"
 )
 
 bad_request_response = OpenApiResponse(
-	response={"detail": "Datos inválidos"},
-	description="Datos inválidos"
+    response={"detail": "Datos inválidos"},
+    description="Datos inválidos"
 )
+
 
 class UserViewSet(viewsets.ModelViewSet):
     """
     ViewSet para la tabla User.
     """
     queryset = User.objects.all()
-    serializer_class = userSerializer
+    serializer_class = UserSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = UserFilter
 
@@ -36,42 +37,42 @@ class UserViewSet(viewsets.ModelViewSet):
         summary="Obtener todos los usuarios",
         description="Devuelve una lista de todos los usuarios.",
         responses={
-            200: userSerializer(many=True),
+            200: UserSerializer(many=True),
             401: unauthorized_response
         }
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
-    
+
     @extend_schema(
         summary="Obtener un usuario por ID",
         description="Devuelve un usuario por ID.",
         responses={
-            200: userSerializer, 
-            401: unauthorized_response, 
+            200: UserSerializer,
+            401: unauthorized_response,
             404: {"description": "No encontrado"}}
     )
-    def retrive(self, request, *args, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
 
     @extend_schema(
         summary="Crear una usuario",
-        request=userSerializer,
+        request=UserSerializer,
         responses={
-            201: userSerializer,
+            201: UserSerializer,
             400: bad_request_response,
             401: unauthorized_response
         }
     )
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
-    
+
     @extend_schema(
         summary="Actualizar un usuario",
         description="Reemplaza completamente un usuario existente por ID.",
-        request= userSerializer,
+        request=UserSerializer,
         responses={
-            200: userSerializer,
+            200: UserSerializer,
             400: bad_request_response,
             401: unauthorized_response,
             404: not_found_response
@@ -79,13 +80,13 @@ class UserViewSet(viewsets.ModelViewSet):
     )
     def update(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
-    
+
     @extend_schema(
         summary="Actualizar parcialmente un usuario",
         description="Modifica solo algunos campos de un usuario existente.",
-        request=userSerializer,
+        request=UserSerializer,
         responses={
-            200: userSerializer,
+            200: UserSerializer,
             400: bad_request_response,
             401: unauthorized_response,
             404: not_found_response
@@ -93,7 +94,7 @@ class UserViewSet(viewsets.ModelViewSet):
     )
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
-    
+
     @extend_schema(
         summary="Eliminar un usuario",
         description="Elimina un usuario por ID.",
@@ -105,4 +106,3 @@ class UserViewSet(viewsets.ModelViewSet):
     )
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
-    

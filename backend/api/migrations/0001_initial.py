@@ -88,7 +88,8 @@ class Migration(migrations.Migration):
                 ("title", models.CharField(max_length=155)),
                 ("tema", models.CharField(max_length=255)),
                 ("description", models.TextField()),
-                ("initial_price", models.DecimalField(decimal_places=2, max_digits=10)),
+                ("initial_price", models.DecimalField(
+                    decimal_places=2, max_digits=10)),
                 ("state", models.CharField(max_length=50)),
                 ("date_available", models.DateTimeField()),
                 (
@@ -110,7 +111,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name="clase",
-            name="owenId",
+            name="ownerId",
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name="owner",
