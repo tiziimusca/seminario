@@ -118,4 +118,89 @@ class Migration(migrations.Migration):
                 to="api.user",
             ),
         ),
+        migrations.CreateModel(
+            name="Pago",
+            fields=[
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("price", models.DecimalField(decimal_places=2, max_digits=10)),
+                ("pagadorId", models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to="api.user")),
+                ("beneficiarioId", models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to="api.user")),
+                (
+                    "clase",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="api.clase"
+                    ),
+                ),
+            ],
+        ),
+        migrations.CreateModel(
+            name="Calificacion",
+            fields=[
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("calificadoId", models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, related_name="calificado", to="api.user")),
+                ("calificadorId", models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, related_name="calificador", to="api.user")),
+                ("clase", models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to="api.clase"
+                ),
+                ),
+                ("calificacion", models.IntegerField()),
+                ("date", models.DateTimeField(auto_now_add=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name="Reseña",
+            fields=[
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("reseña", models.TextField(max_length=255)),
+                ("date", models.DateTimeField(auto_now_add=True)),
+                ("reseñadoId", models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, related_name="reseñado", to="api.user")),
+                ("reseñadorId", models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, related_name="reseñador", to="api.user")),
+            ],
+        ),
+        migrations.CreateModel(
+            name="Queja",
+            fields=[
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("queja", models.TextField(max_length=255)),
+                ("date", models.DateTimeField(auto_now_add=True)),
+            ],
+        ),
     ]

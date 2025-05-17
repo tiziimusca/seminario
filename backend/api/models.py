@@ -77,7 +77,7 @@ class Pago(models.Model):
         return self.price, self.pagadorId, self.beneficiarioId, self.claseId
 
 
-class Califiacion(models.Model):
+class Calificacion(models.Model):
     calificadoId = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='calificado')
     calificadorId = models.ForeignKey(
