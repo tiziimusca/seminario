@@ -31,3 +31,5 @@ typing_extensions==4.13.0
 uritemplate==4.1.1
 urllib3==2.4.0
 pytz==2025.2
+django-environ==0.12.0
+mysqlclient==2.2.7
