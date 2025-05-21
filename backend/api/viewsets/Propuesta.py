@@ -5,10 +5,11 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 from ..models import Propuesta
-from ..serializers import PropuestaSerializer
+from ..serializers import PropuestaSerializer, ContraOfertaSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from api.filters import PropuestaFilter
 from django.utils import timezone
+from ..service import crear_contraoferta 
 
 unauthorized_response = OpenApiResponse(
     response={"detail": "No autorizado"},
@@ -75,7 +76,7 @@ class PropuestaViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
     def perform_create(self, serializer):
-        serializer.save(state = "activo") # Cambia el estado a "activo" al crearse, agregar userId = self.request.user cuando se implemente la autenticación
+        serializer.save(state = "pendiente") # Cambia el estado a "activo" al crearse, agregar userId = self.request.user cuando se implemente la autenticación
     
     @extend_schema(
         summary="Actualizar una propuesta",
@@ -141,5 +142,22 @@ class PropuestaViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(obj)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+    @extend_schema(
+        request=ContraOfertaSerializer,
+        responses=ContraOfertaSerializer
+    )
+    @action(detail=True, methods=['post'], url_path='Ofertar')
+    def ofertar(self, request, pk=None):
+        propuesta = self.get_object()
+        
+        if propuesta.state == "cancelado":
+            return Response({"detail": "No se puede ofertar en una propuesta cancelada."}, status=status.HTTP_400_BAD_REQUEST)
 
+        data = request.data.copy()
+        serializer, errors = crear_contraoferta( data, propuesta, context={'request': request})
 
+        if errors:
+            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+        propuesta.state = "ofertada"
+        propuesta.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

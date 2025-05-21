@@ -49,6 +49,8 @@ class PropuestaFilter(django_filters.FilterSet):
     state = CharFilter(field_name='state', lookup_expr='icontains')
     date_available = django_filters.DateTimeFilter(
         field_name='date_available', lookup_expr='gte')
+    duration = django_filters.DurationFilter(
+        field_name='duration', lookup_expr='gte')
 
     class Meta:
         model = Propuesta
@@ -64,11 +66,15 @@ class ContraOfertaFilter(django_filters.FilterSet):
         field_name='new_price', lookup_expr='gte')
     date_available = django_filters.DateTimeFilter(
         field_name='date_available', lookup_expr='gte')
+    description = CharFilter(field_name='description', lookup_expr='icontains')
+    state = CharFilter(field_name='state', lookup_expr='icontains')
+    duration = django_filters.DurationFilter(
+        field_name='duration', lookup_expr='gte')
 
     class Meta:
         model = ContraOferta
         fields = [
-            'propuestaId', 'userId', 'new_price', 'date_available'
+            'propuestaId', 'userId', 'new_price', 'date_available', 'description', 'state'
         ]
 
 

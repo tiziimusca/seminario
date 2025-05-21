@@ -26,6 +26,7 @@ class Propuesta(models.Model):
     initial_price = models.DecimalField(max_digits=10, decimal_places=2)
     state = models.CharField(max_length=50)
     date_available = models.DateTimeField()
+    duration = models.DurationField()
 
     def __str__(self):
         return self.userId, self.description, self.initial_price, self.state, self.date_available
@@ -34,9 +35,9 @@ class Propuesta(models.Model):
         argentina_tz = pytz.timezone('America/Argentina/Buenos_Aires')
         now_arg = timezone.now().astimezone(argentina_tz)
         fecha_arg = self.date_available.astimezone(argentina_tz)
-        print("fecha habil", self.date_available,
-              " ---- fecha actual", now_arg)
-        if self.state == "activo" and fecha_arg < now_arg:
+        """print("fecha habil", self.date_available,
+              " ---- fecha actual", now_arg)"""
+        if self.state == "pendiente" and fecha_arg < now_arg:
             self.state = "expirado"
             self.save()
         return self.state
@@ -47,6 +48,9 @@ class ContraOferta(models.Model):
         Propuesta, on_delete=models.CASCADE, related_name='propuesta')
     userId = models.IntegerField()
     new_price = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.TextField()
+    state = models.CharField(max_length=50)
+    duration = models.DurationField()
     date_available = models.DateTimeField()
 
     def __str__(self):
