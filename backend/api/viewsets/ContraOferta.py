@@ -2,11 +2,14 @@ from rest_framework.permissions import DjangoModelPermissions
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
-from ..models import ContraOferta
-from ..serializers import ContraOfertaSerializer
+from ..models import ContraOferta, Propuesta, Clase, User
+from ..serializers import ClaseSerializer, ContraOfertaSerializer
 from django_filters.rest_framework import DjangoFilterBackend
+from django.shortcuts import get_object_or_404
 from api.filters import ContraOfertaFilter
+from django.db import transaction
 
 unauthorized_response = OpenApiResponse(
     response={"detail": "No autorizado"},
@@ -50,7 +53,7 @@ class ContraOfertaViewSet(viewsets.ModelViewSet):
     )
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
-
+    """"
     @extend_schema(
         summary="Crear una contraoferta",
         request=ContraOfertaSerializer,
@@ -61,7 +64,7 @@ class ContraOfertaViewSet(viewsets.ModelViewSet):
         }
     )
     def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+        return super().create(request, *args, **kwargs) """
 
     @extend_schema(
         summary="Actualiza una contraoferta",
@@ -102,3 +105,75 @@ class ContraOfertaViewSet(viewsets.ModelViewSet):
     )
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
+    
+    @extend_schema(
+        summary= "cancelar contraoferta",
+        request=None,
+        responses={
+            200: ContraOfertaSerializer,
+            400: bad_request_response,
+            401: unauthorized_response,
+            404: not_found_response
+        }
+    )
+    @action(detail=True, methods=["post"], url_path="cancelar", url_name="cancelar_contraoferta")
+    def cancelar_contraOferta(self):
+        contraOferta = self.get_object()
+        if contraOferta.state in ["cancelado", "expirado"]:
+            return Response(
+                {"detail": f"La contraoferta ya está {contra_oferta.state}."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        contraOferta.state = "cancelado"
+        contraOferta.save()
+        serializer = self.get_serializer(contraOferta)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    @extend_schema(
+        summary="Aceptar una contraoferta",    #una ves aceptada la contraoferta, se crea la clase 
+        request=None,
+        responses={
+            201: ClaseSerializer,
+            400: bad_request_response,
+            401: unauthorized_response,
+            404: not_found_response   
+        }
+    )
+    @action(detail=True, methods=["post"], url_path="aceptar", url_name="aceptar_contraoferta")
+    def aceptar_contraOferta(self, request, pk=None):
+        contra_oferta = self.get_object()
+        propuesta = get_object_or_404(Propuesta, id=contra_oferta.propuestaId.id)
+
+        if contra_oferta.state in ["cancelado", "expirado", "aceptada"]:
+            return Response(
+                {"detail": f"La contraoferta ya está {contra_oferta.state}."},
+                status=status.HTTP_400_BAD_REQUEST
+        )
+
+        try: 
+            guest = User.objects.get(id=contra_oferta.userId) #si no existe el usuario, se retorna un error
+            owner = User.objects.get(id=propuesta.userId.id)
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "Usuario no encontrado."}, status=status.HTTP_404_NOT_FOUND)
+        
+
+        with transaction.atomic():               #si no se puede crear la clase, se deshace todo lo que se hizo
+            clase = Clase.objects.create(
+                title=propuesta.title,
+                tema=propuesta.tema,
+                guestId=guest,
+                ownerId= owner,
+                date=contra_oferta.date_available,
+                price=contra_oferta.new_price,
+                duration=contra_oferta.duration
+            )
+            
+            contra_oferta.state = "aceptada"
+            propuesta.state = "aceptada"
+            contra_oferta.save()
+            propuesta.save()
+        serializer = ClaseSerializer(clase)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+

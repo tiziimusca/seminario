@@ -29,23 +29,28 @@ class Propuesta(models.Model):
     duration = models.DurationField()
 
     def __str__(self):
-        return self.userId, self.description, self.initial_price, self.state, self.date_available
+        return f"{self.title} - {self.description[:30]}... - Estado: {self.state}"
+
 
     def verificar_expiracion(self):
         argentina_tz = pytz.timezone('America/Argentina/Buenos_Aires')
         now_arg = timezone.now().astimezone(argentina_tz)
         fecha_arg = self.date_available.astimezone(argentina_tz)
-        """print("fecha habil", self.date_available,
-              " ---- fecha actual", now_arg)"""
-        if self.state == "pendiente" and fecha_arg < now_arg:
+
+        if self.state in ["pendiente", "expirado"] and fecha_arg < now_arg:
             self.state = "expirado"
             self.save()
-        return self.state
+
+            for contra_oferta in self.contraofertas.all():
+                if  contra_oferta.propuestaId.id == self.id and contra_oferta.state == "pendiente":
+                    contra_oferta.state = "expirado"
+                    contra_oferta.save()
+        return self.state     
 
 
 class ContraOferta(models.Model):
     propuestaId = models.ForeignKey(
-        Propuesta, on_delete=models.CASCADE, related_name='propuesta')
+        Propuesta, on_delete=models.CASCADE, related_name='contraofertas')
     userId = models.IntegerField()
     new_price = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField()
@@ -54,7 +59,7 @@ class ContraOferta(models.Model):
     date_available = models.DateTimeField()
 
     def __str__(self):
-        return self.propuestaId, self.userId, self.new_price, self.date_available
+        return f"{self.propuestaId.title} - {self.description[:10]}... - Estado: {self.state}"
 
 
 class User(models.Model):

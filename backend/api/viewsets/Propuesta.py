@@ -132,17 +132,22 @@ class PropuestaViewSet(viewsets.ModelViewSet):
             404: not_found_response
         }
     )
-    @action(detail=True, methods=['post'], url_path='cancelar')
-    def cancel(self, request, pk=None):
+    @action(detail=True, methods=['post'], url_path='cancelar', url_name='cancelar_propuesta')
+    def cancel(self):
         obj = self.get_object()
-        if obj.state == "cancelado":
-            return Response({"detail": "La propuesta ya está cancelada."}, status=status.HTTP_400_BAD_REQUEST)
+        if obj.state in ["cancelado", "expirado"]:
+            return Response(
+                {"detail": f"La Propuesta ya está {obj.state}."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
         obj.state = "cancelado"
         obj.save()
         serializer = self.get_serializer(obj)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     @extend_schema(
+        summary="Ofertar en una propuesta",
         request=ContraOfertaSerializer,
         responses=ContraOfertaSerializer
     )
@@ -150,8 +155,11 @@ class PropuestaViewSet(viewsets.ModelViewSet):
     def ofertar(self, request, pk=None):
         propuesta = self.get_object()
         
-        if propuesta.state == "cancelado":
-            return Response({"detail": "No se puede ofertar en una propuesta cancelada."}, status=status.HTTP_400_BAD_REQUEST)
+        if propuesta.state in ["cancelado", "expirado"]:
+            return Response(
+                {"detail": f"La Propuesta ya está {propuesta.state}."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         data = request.data.copy()
         serializer, errors = crear_contraoferta( data, propuesta, context={'request': request})
