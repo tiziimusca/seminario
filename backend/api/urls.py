@@ -8,6 +8,7 @@ from .viewsets.Calificacion import CalificacionViewSet
 from .viewsets.Pago import PagoViewSet
 from .viewsets.Reseña import ReseñaViewSet
 from .viewsets.Queja import QuejaViewSet
+from .viewsets.auth import CustomAuthToken, register
 
 router = DefaultRouter()
 router.register(r'clase', ClaseViewSet)
@@ -21,4 +22,6 @@ router.register(r'queja', QuejaViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('auth/login/', CustomAuthToken.as_view(), name='api_token_auth'),
+    path('auth/register/', register, name='api_register'),
 ]

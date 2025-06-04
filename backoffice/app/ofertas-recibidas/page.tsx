@@ -1,0 +1,141 @@
+"use client"
+
+import { Layout } from "@/components/layout"
+import { Button } from "@/components/button"
+import { useApi, useApiMutation } from "@/hooks/use-api"
+import { api, type User } from "@/lib/api"
+import Image from "next/image"
+import { useState, useEffect } from "react"
+
+export default function OfertasRecibidasPage() {
+  const [users, setUsers] = useState<Record<number, User>>({})
+  const { mutate: aceptarOferta, loading: aceptandoOferta } = useApiMutation()
+
+  // TODO: Filtrar por propuestas del usuario actual cuando se implemente autenticación
+  const {
+    data: contraOfertas,
+    loading,
+    error,
+    refetch,
+  } = useApi(() => api.contraOfertas.getAll({ state: "pendiente" }))
+
+  // Cargar información de usuarios
+  useEffect(() => {
+    if (contraOfertas) {
+      const loadUsers = async () => {
+        const userPromises = contraOfertas.map(async (contraOferta) => {
+          try {
+            const user = await api.users.getById(contraOferta.userId)
+            return { id: contraOferta.userId, user }
+          } catch (error) {
+            console.error(`Error loading user ${contraOferta.userId}:`, error)
+            return null
+          }
+        })
+
+        const userResults = await Promise.all(userPromises)
+        const usersMap: Record<number, User> = {}
+
+        userResults.forEach((result) => {
+          if (result) {
+            usersMap[result.id] = result.user
+          }
+        })
+
+        setUsers(usersMap)
+      }
+
+      loadUsers()
+    }
+  }, [contraOfertas])
+
+  const handleAceptarOferta = async (contraOfertaId: number) => {
+    try {
+      await aceptarOferta(api.contraOfertas.aceptar, contraOfertaId)
+      // Recargar la lista después de aceptar
+      refetch()
+    } catch (error) {
+      console.error("Error al aceptar oferta:", error)
+    }
+  }
+
+  if (loading) {
+    return (
+      <Layout title="Ver ofertas para clases publicadas">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg">Cargando ofertas...</div>
+        </div>
+      </Layout>
+    )
+  }
+
+  if (error) {
+    return (
+      <Layout title="Ver ofertas para clases publicadas">
+        <div className="text-center text-red-600">Error al cargar las ofertas: {error}</div>
+      </Layout>
+    )
+  }
+
+  return (
+    <Layout title="Ver ofertas para clases publicadas">
+      <div className="space-y-4">
+        {contraOfertas?.map((contraOferta) => {
+          const user = users[contraOferta.userId]
+
+          return (
+            <div key={contraOferta.id} className="bg-white rounded-lg p-4 shadow-sm">
+              <div className="flex items-start mb-3">
+                <div className="flex-shrink-0 mr-3">
+                  <Image
+                    src="/placeholder.svg?height=50&width=50"
+                    alt={user ? `${user.name} ${user.surname}` : "Usuario"}
+                    width={50}
+                    height={50}
+                    className="rounded-full"
+                  />
+                </div>
+                <div>
+                  <h3 className="font-medium">{user ? `${user.name} ${user.surname}` : "Cargando..."}</h3>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2 mb-3 text-sm">
+                <div>
+                  <span className="font-medium">Monto:</span>
+                  <p>${contraOferta.new_price}</p>
+                </div>
+                <div>
+                  <span className="font-medium">Duración:</span>
+                  <p>{contraOferta.duration}</p>
+                </div>
+                <div>
+                  <span className="font-medium">Fecha y hora:</span>
+                  <p>{new Date(contraOferta.date_available).toLocaleString()}</p>
+                </div>
+              </div>
+
+              <div className="mb-3 text-sm">
+                <span className="font-medium">Descripción:</span>
+                <p>{contraOferta.description}</p>
+              </div>
+
+              <div className="flex justify-end">
+                <Button
+                  variant="info"
+                  fullWidth={false}
+                  onClick={() => handleAceptarOferta(contraOferta.id)}
+                  disabled={aceptandoOferta}
+                >
+                  {aceptandoOferta ? "Aceptando..." : "Aceptar"}
+                </Button>
+              </div>
+            </div>
+          )
+        })}
+
+        {contraOfertas?.length === 0 && <div className="text-center text-gray-500 py-8">No hay ofertas pendientes</div>}
+      </div>
+    </Layout>
+  )
+}
