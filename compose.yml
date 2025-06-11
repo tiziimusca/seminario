@@ -36,6 +36,24 @@ services:
     networks:
       - internal
 
+  backoffice:
+    image: node:18-alpine
+    container_name: backoffice
+    working_dir: /app
+    volumes:
+      - ./backoffice:/app
+      - /app/node_modules
+    command: >
+      sh -c "npm install &&
+      npm run dev"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
+    networks:
+      - internal
 networks:
   internal:
   

@@ -7,15 +7,21 @@ export default function PerfilPropioPage() {
     id: 1,
     nombre: "Jesse Leos",
     imagen: "/placeholder.svg?height=100&width=100",
-    fechaRegistro: "August 2014",
-    correo: "**********",
+    fechaRegistro: "August 2024",
+    correo: "jesseleos@gmail.com",
     calificacion: 4,
     resenas: [
       {
         id: 1,
-        autor: "Nombre y Apellido del publicante",
+        autor: "Maria Perez",
         calificacion: 4,
-        descripcion: "Descripción",
+        descripcion: "Divertida y educativa.",
+      },
+      {
+        id: 2,
+        autor: "Juan Lopez",
+        calificacion: 5,
+        descripcion: "Muy buena experiencia, lo recomiendo.",
       },
     ],
   }
@@ -51,7 +57,7 @@ export default function PerfilPropioPage() {
           {usuario.resenas.map((resena) => (
             <div key={resena.id} className="bg-white rounded-lg p-3 mb-2">
               <div className="flex items-center justify-between mb-1">
-                <span className="font-medium">{resena.autor}</span>
+                <span className="font-medium text-black">{resena.autor}</span>
                 <StarRating initialRating={resena.calificacion} readOnly size="sm" />
               </div>
               <p className="text-sm text-gray-600">{resena.descripcion}</p>

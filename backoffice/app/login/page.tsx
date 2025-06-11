@@ -7,7 +7,7 @@ import { Button } from "@/components/button"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { useAuth } from "@/lib/auth"
+import { useAuth } from "@/app/providers"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -34,9 +34,13 @@ export default function LoginPage() {
     setError(null)
 
     try {
+      console.log("Intentando iniciar sesión...")
       await login(formData.email, formData.password)
-      router.push("/dashboard")
+      console.log("Login exitoso, redirigiendo...")
+
+      router.replace("/dashboard")
     } catch (err: any) {
+      console.error("Error en login:", err)
       setError(err.message || "Error al iniciar sesión")
     }
   }

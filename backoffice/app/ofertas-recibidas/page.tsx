@@ -12,16 +12,19 @@ export default function OfertasRecibidasPage() {
   const { mutate: aceptarOferta, loading: aceptandoOferta } = useApiMutation()
 
   // TODO: Filtrar por propuestas del usuario actual cuando se implemente autenticación
-  const {
-    data: contraOfertas,
-    loading,
-    error,
-    refetch,
-  } = useApi(() => api.contraOfertas.getAll({ state: "pendiente" }))
+  const { data, loading, error, refetch } = useApi(() => api.contraOfertas.getAll({ state: "pendiente" }))
+
+  // Asegurarse de que contraOfertas sea siempre un array
+  const contraOfertas = Array.isArray(data) ? data : []
+
+  // Debugging
+  useEffect(() => {
+    console.log("Datos recibidos de contraOfertas API:", data)
+  }, [data])
 
   // Cargar información de usuarios
   useEffect(() => {
-    if (contraOfertas) {
+    if (contraOfertas.length > 0) {
       const loadUsers = async () => {
         const userPromises = contraOfertas.map(async (contraOferta) => {
           try {
@@ -80,61 +83,63 @@ export default function OfertasRecibidasPage() {
   return (
     <Layout title="Ver ofertas para clases publicadas">
       <div className="space-y-4">
-        {contraOfertas?.map((contraOferta) => {
-          const user = users[contraOferta.userId]
+        {contraOfertas.length > 0 ? (
+          contraOfertas.map((contraOferta) => {
+            const user = users[contraOferta.userId]
 
-          return (
-            <div key={contraOferta.id} className="bg-white rounded-lg p-4 shadow-sm">
-              <div className="flex items-start mb-3">
-                <div className="flex-shrink-0 mr-3">
-                  <Image
-                    src="/placeholder.svg?height=50&width=50"
-                    alt={user ? `${user.name} ${user.surname}` : "Usuario"}
-                    width={50}
-                    height={50}
-                    className="rounded-full"
-                  />
+            return (
+              <div key={contraOferta.id} className="bg-white rounded-lg p-4 shadow-sm">
+                <div className="flex items-start mb-3">
+                  <div className="flex-shrink-0 mr-3">
+                    <Image
+                      src="/placeholder.svg?height=50&width=50"
+                      alt={user ? `${user.name} ${user.surname}` : "Usuario"}
+                      width={50}
+                      height={50}
+                      className="rounded-full"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-medium">{user ? `${user.name} ${user.surname}` : "Cargando..."}</h3>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-medium">{user ? `${user.name} ${user.surname}` : "Cargando..."}</h3>
+
+                <div className="grid grid-cols-3 gap-2 mb-3 text-sm">
+                  <div>
+                    <span className="font-medium">Monto:</span>
+                    <p>${contraOferta.new_price}</p>
+                  </div>
+                  <div>
+                    <span className="font-medium">Duración:</span>
+                    <p>{contraOferta.duration}</p>
+                  </div>
+                  <div>
+                    <span className="font-medium">Fecha y hora:</span>
+                    <p>{new Date(contraOferta.date_available).toLocaleString()}</p>
+                  </div>
+                </div>
+
+                <div className="mb-3 text-sm">
+                  <span className="font-medium">Descripción:</span>
+                  <p>{contraOferta.description}</p>
+                </div>
+
+                <div className="flex justify-end">
+                  <Button
+                    variant="info"
+                    fullWidth={false}
+                    onClick={() => handleAceptarOferta(contraOferta.id)}
+                    disabled={aceptandoOferta}
+                  >
+                    {aceptandoOferta ? "Aceptando..." : "Aceptar"}
+                  </Button>
                 </div>
               </div>
-
-              <div className="grid grid-cols-3 gap-2 mb-3 text-sm">
-                <div>
-                  <span className="font-medium">Monto:</span>
-                  <p>${contraOferta.new_price}</p>
-                </div>
-                <div>
-                  <span className="font-medium">Duración:</span>
-                  <p>{contraOferta.duration}</p>
-                </div>
-                <div>
-                  <span className="font-medium">Fecha y hora:</span>
-                  <p>{new Date(contraOferta.date_available).toLocaleString()}</p>
-                </div>
-              </div>
-
-              <div className="mb-3 text-sm">
-                <span className="font-medium">Descripción:</span>
-                <p>{contraOferta.description}</p>
-              </div>
-
-              <div className="flex justify-end">
-                <Button
-                  variant="info"
-                  fullWidth={false}
-                  onClick={() => handleAceptarOferta(contraOferta.id)}
-                  disabled={aceptandoOferta}
-                >
-                  {aceptandoOferta ? "Aceptando..." : "Aceptar"}
-                </Button>
-              </div>
-            </div>
-          )
-        })}
-
-        {contraOfertas?.length === 0 && <div className="text-center text-gray-500 py-8">No hay ofertas pendientes</div>}
+            )
+          })
+        ) : (
+          <div className="text-center text-gray-500 py-8">No hay ofertas pendientes</div>
+        )}
       </div>
     </Layout>
   )

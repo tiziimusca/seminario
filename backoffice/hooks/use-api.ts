@@ -23,10 +23,14 @@ export function useApi<T>(apiCall: () => Promise<T>, dependencies: any[] = []): 
         setState((prev) => ({ ...prev, loading: true, error: null }))
         const result = await apiCall()
 
+        // Debug
+        console.log("API result:", result)
+
         if (isMounted) {
           setState({ data: result, loading: false, error: null })
         }
       } catch (error) {
+        console.error("API error:", error)
         if (isMounted) {
           setState({
             data: null,
@@ -61,6 +65,7 @@ export function useApiMutation<T, P = any>() {
       setState({ data: result, loading: false, error: null })
       return result
     } catch (error) {
+      console.error("Mutation error:", error)
       const errorMessage = error instanceof Error ? error.message : "Error desconocido"
       setState({ data: null, loading: false, error: errorMessage })
       throw error

@@ -11,11 +11,19 @@ export default function HistorialPagosPage() {
   const [clases, setClases] = useState<Record<number, Clase>>({})
 
   // TODO: Filtrar por pagadorId o beneficiarioId del usuario actual cuando se implemente autenticación
-  const { data: pagos, loading, error } = useApi(() => api.pagos.getAll())
+  const { data, loading, error } = useApi(() => api.pagos.getAll())
+
+  // Asegurarse de que pagos sea siempre un array
+  const pagos = Array.isArray(data) ? data : []
+
+  // Debugging
+  useEffect(() => {
+    console.log("Datos recibidos de pagos API:", data)
+  }, [data])
 
   // Cargar información de usuarios y clases
   useEffect(() => {
-    if (pagos) {
+    if (pagos.length > 0) {
       const loadData = async () => {
         // Cargar clases
         const clasePromises = pagos.map(async (pago) => {
@@ -93,55 +101,55 @@ export default function HistorialPagosPage() {
   return (
     <Layout title="Historial de pagos y cobros">
       <div className="space-y-4">
-        {pagos?.map((pago) => {
-          const pagador = users[pago.pagadorId]
-          const beneficiario = users[pago.beneficiarioId]
-          const clase = clases[pago.claseId]
+        {pagos.length > 0 ? (
+          pagos.map((pago) => {
+            const pagador = users[pago.pagadorId]
+            const beneficiario = users[pago.beneficiarioId]
+            const clase = clases[pago.claseId]
 
-          // TODO: Determinar si es pago o cobro basado en el usuario actual
-          const esPago = true // Placeholder - cambiar cuando se implemente autenticación
-          const otroUsuario = esPago ? beneficiario : pagador
+            // TODO: Determinar si es pago o cobro basado en el usuario actual
+            const esPago = true // Placeholder - cambiar cuando se implemente autenticación
+            const otroUsuario = esPago ? beneficiario : pagador
 
-          return (
-            <div key={pago.id} className="bg-white rounded-lg p-4 shadow-sm">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0 mr-3">
-                    <Image
-                      src="/placeholder.svg?height=50&width=50"
-                      alt={otroUsuario ? `${otroUsuario.name} ${otroUsuario.surname}` : "Usuario"}
-                      width={50}
-                      height={50}
-                      className="rounded-full"
-                    />
+            return (
+              <div key={pago.id} className="bg-white rounded-lg p-4 shadow-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 mr-3">
+                      <Image
+                        src="/placeholder.svg?height=50&width=50"
+                        alt={otroUsuario ? `${otroUsuario.name} ${otroUsuario.surname}` : "Usuario"}
+                        width={50}
+                        height={50}
+                        className="rounded-full"
+                      />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">
+                        {otroUsuario ? `${otroUsuario.name} ${otroUsuario.surname}` : "Cargando..."}
+                      </h3>
+                      {clase && <p className="text-sm text-gray-600">Clase: {clase.tema}</p>}
+                    </div>
+                  </div>
+                  <div className="text-sm font-medium">
+                    <span className="text-green-500">({esPago ? "Pago" : "Cobro"}) Completado</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 mb-3 text-sm">
+                  <div>
+                    <span className="font-medium">Monto:</span>
+                    <p>${pago.price}</p>
                   </div>
                   <div>
-                    <h3 className="font-medium">
-                      {otroUsuario ? `${otroUsuario.name} ${otroUsuario.surname}` : "Cargando..."}
-                    </h3>
-                    {clase && <p className="text-sm text-gray-600">Clase: {clase.tema}</p>}
+                    <span className="font-medium">Fecha:</span>
+                    <p>{clase ? new Date(clase.date).toLocaleString() : "-"}</p>
                   </div>
                 </div>
-                <div className="text-sm font-medium">
-                  <span className="text-green-500">({esPago ? "Pago" : "Cobro"}) Completado</span>
-                </div>
               </div>
-
-              <div className="grid grid-cols-2 gap-2 mb-3 text-sm">
-                <div>
-                  <span className="font-medium">Monto:</span>
-                  <p>${pago.price}</p>
-                </div>
-                <div>
-                  <span className="font-medium">Fecha:</span>
-                  <p>{clase ? new Date(clase.date).toLocaleString() : "-"}</p>
-                </div>
-              </div>
-            </div>
-          )
-        })}
-
-        {pagos?.length === 0 && (
+            )
+          })
+        ) : (
           <div className="text-center text-gray-500 py-8">No hay transacciones en el historial</div>
         )}
       </div>

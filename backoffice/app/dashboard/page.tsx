@@ -58,7 +58,7 @@ export default function DashboardPage() {
                 <div className="w-10 h-10 rounded-full bg-[#1e2a32] flex items-center justify-center text-white mr-3">
                   {item.icon}
                 </div>
-                <h3 className="font-medium text-lg">{item.title}</h3>
+                <h3 className="font-medium text-lg text-gray-900">{item.title}</h3>
               </div>
               <p className="text-gray-600 text-sm">{item.description}</p>
             </div>

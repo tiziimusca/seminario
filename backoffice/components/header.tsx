@@ -3,7 +3,7 @@
 import type React from "react"
 
 import Link from "next/link"
-import { useAuth } from "@/lib/auth"
+import { useAuth } from "@/app/providers"
 import { ArrowLeft, User, LogOut } from "lucide-react"
 import { useRouter } from "next/navigation"
 
