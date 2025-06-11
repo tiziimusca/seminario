@@ -17,6 +17,7 @@ export default function MisPublicacionesPage() {
   const { data, loading, error, refetch } = useApi(() => api.propuestas.getAll())
 
   // Asegurarse de que propuestas sea siempre un array
+  console.log("Datos recibidos de la API:", data)
   const propuestas = Array.isArray(data) ? data : []
 
   // Debugging
@@ -149,7 +150,7 @@ export default function MisPublicacionesPage() {
                       />
                     </div>
                     <div>
-                      <h3 className="font-medium">{user ? `${user.name} ${user.surname}` : "Cargando..."}</h3>
+                      <h3 className="font-medium text-black">{user ? `${user.name} ${user.surname}` : "Cargando..."}</h3>
                     </div>
                   </div>
                   <div className={`text-sm font-medium ${getEstadoColor(propuesta.state)}`}>
@@ -159,26 +160,26 @@ export default function MisPublicacionesPage() {
 
                 <div className="grid grid-cols-2 gap-2 mb-3 text-sm">
                   <div>
-                    <span className="font-medium">Tema:</span>
-                    <p>{propuesta.tema}</p>
+                    <span className="font-medium text-black">Tema:</span>
+                    <p className="text-sm text-gray-600">{propuesta.tema}</p>
                   </div>
                   <div>
-                    <span className="font-medium">Monto:</span>
-                    <p>${propuesta.initial_price}</p>
+                    <span className="font-medium text-black">Monto:</span>
+                    <p className="text-sm text-gray-600">${propuesta.initial_price}</p>
                   </div>
                   <div>
-                    <span className="font-medium">Duración:</span>
-                    <p>{propuesta.duration}</p>
+                    <span className="font-medium text-black">Duración:</span>
+                    <p className="text-sm text-gray-600">{propuesta.duration}</p>
                   </div>
                   <div>
-                    <span className="font-medium">Fecha límite:</span>
-                    <p>{new Date(propuesta.date_available).toLocaleDateString()}</p>
+                    <span className="font-medium text-black">Fecha límite:</span>
+                    <p className="text-sm text-gray-600">{new Date(propuesta.date_available).toLocaleDateString()}</p>
                   </div>
                 </div>
 
                 <div className="mb-3 text-sm">
-                  <span className="font-medium">Descripción:</span>
-                  <p>{propuesta.description}</p>
+                  <span className="font-medium text-black">Descripción:</span>
+                  <p className="text-sm text-gray-600">{propuesta.description}</p>
                 </div>
 
                 <div className="flex space-x-2">
