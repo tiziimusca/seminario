@@ -68,14 +68,14 @@ export default function OfertaClasePage() {
     <Layout title="Oferta de clase">
       {propuesta && (
         <div className="mb-6 p-4 bg-white rounded-lg shadow-sm">
-          <h3 className="font-medium mb-2">Propuesta original:</h3>
-          <p>
+          <h3 className="font-medium mb-2 text-black">Propuesta original:</h3>
+          <p className="text-sm text-gray-600">
             <strong>Tema:</strong> {propuesta.tema}
           </p>
-          <p>
+          <p className="text-sm text-gray-600">
             <strong>Precio solicitado:</strong> ${propuesta.initial_price}
           </p>
-          <p>
+          <p className="text-sm text-gray-600">
             <strong>Descripción:</strong> {propuesta.description}
           </p>
         </div>

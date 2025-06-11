@@ -5,23 +5,29 @@ import Image from "next/image"
 export default function PerfilPropioPage() {
   const usuario = {
     id: 1,
-    nombre: "Jesse Leos",
+    nombre: "Tiziano Musca",
     imagen: "/placeholder.svg?height=100&width=100",
     fechaRegistro: "August 2024",
-    correo: "jesseleos@gmail.com",
-    calificacion: 4,
+    correo: "tizianomusca@gmail.com",
+    calificacion: 4.6,
     resenas: [
       {
         id: 1,
         autor: "Maria Perez",
         calificacion: 4,
-        descripcion: "Divertida y educativa.",
+        descripcion: "Divertido y educativo.",
       },
       {
         id: 2,
         autor: "Juan Lopez",
         calificacion: 5,
         descripcion: "Muy buena experiencia, lo recomiendo.",
+      },
+      {
+        id: 3,
+        autor: "Ana Gomez",
+        calificacion: 5,
+        descripcion: "Excelente profesor, aprendí mucho.",
       },
     ],
   }
