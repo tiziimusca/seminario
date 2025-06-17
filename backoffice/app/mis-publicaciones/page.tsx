@@ -132,8 +132,10 @@ export default function MisPublicacionesPage() {
       }
     >
       <div className="space-y-4">
-        {propuestas.length > 0 ? (
-          propuestas.map((propuesta) => {
+        {propuestas.filter(p => p.userId === 1).length > 0 ? (
+          propuestas
+            .filter(p => p.userId === 1)
+            .map((propuesta) => {
             const user = users[propuesta.userId]
 
             return (
@@ -142,7 +144,7 @@ export default function MisPublicacionesPage() {
                   <div className="flex items-center">
                     <div className="flex-shrink-0 mr-3">
                       <Image
-                        src="/placeholder.svg?height=50&width=50"
+                        src="https://th.bing.com/th/id/OIP.HBdW0soa6fQZVCR3DWGlqQHaG5?rs=1&pid=ImgDetMain"
                         alt={user ? `${user.name} ${user.surname}` : "Usuario"}
                         width={50}
                         height={50}

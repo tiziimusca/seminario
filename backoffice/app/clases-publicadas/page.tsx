@@ -64,14 +64,14 @@ export default function ClasesPublicadasPage() {
   return (
     <Layout title="Ver clases publicadas">
       <div className="space-y-4">
-        {propuestas?.map((propuesta) => {
+          {propuestas?.filter(p => p.userId !== 1).map((propuesta) => {
           const user = users[propuesta.userId]
 
           return (
             <UserCard
               key={propuesta.id}
               name={user ? `${user.name} ${user.surname}` : "Cargando..."}
-              image="/placeholder.svg?height=50&width=50"
+              image="https://toppng.com/public/uploads/preview/ensando-especialmente-en-las-personas-con-movilidad-imagenes-de-personas-115628913400renbsc9lk.png"
               details={[
                 { label: "Tema", value: propuesta.tema },
                 { label: "Monto", value: `$${propuesta.initial_price}` },

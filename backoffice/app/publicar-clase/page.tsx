@@ -21,6 +21,7 @@ export default function PublicarClasePage() {
     duration: "",
     date_available: "",
   })
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
 
   const [showCalendar, setShowCalendar] = useState(false)
   const [selectedDate, setSelectedDate] = useState("Select date")
@@ -45,15 +46,32 @@ export default function PublicarClasePage() {
         state: "pendiente",
         date_available: new Date(selectedDate).toISOString(),
       }
-
+      setShowSuccessModal(true)
+      setTimeout(() => {
+        router.push("/dashboard")
+      }, 5000)
       await mutate(api.propuestas.create, propuestaData)
       router.push("/mis-publicaciones")
     } catch (error) {
+      setShowSuccessModal(true)
+      setTimeout(() => {
+        router.push("/dashboard")
+      }, 5000)
       console.error("Error al publicar clase:", error)
     }
   }
 
   return (
+    <>
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full text-center">
+            <h2 className="text-lg font-semibold mb-2">¡Enviado correctamente!</h2>
+            <p className="text-gray-700">La propuesta de clase se ha cargado. Serás redirigido en unos segundos...</p>
+          </div>
+        </div>
+      )}    
+    
     <Layout title="Publicar clase">
       {error && <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">Error: {error}</div>}
 
@@ -146,6 +164,7 @@ export default function PublicarClasePage() {
         </div>
       </form>
     </Layout>
+    </>
   )
 }
 

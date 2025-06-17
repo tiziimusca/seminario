@@ -113,7 +113,7 @@ class ContraOfertaSerializer(serializers.ModelSerializer):
         model = ContraOferta
         fields = [f.name for f in model._meta.fields] + ['links']
         # cuando se implemete la autentificacion agregar, userId
-        read_only_fields = ['state', 'propuestaId']
+        read_only_fields = ['state']
 
     def get_links(self, obj):
         request = self.context.get('request')
@@ -126,6 +126,7 @@ class ContraOfertaSerializer(serializers.ModelSerializer):
             "update": base_url,
             "delete": base_url
         }
+
 
 class PagoSerializer(serializers.ModelSerializer):
     """

@@ -83,8 +83,10 @@ export default function OfertasRecibidasPage() {
   return (
     <Layout title="Ver ofertas para clases publicadas">
       <div className="space-y-4">
-        {contraOfertas.length > 0 ? (
-          contraOfertas.map((contraOferta) => {
+        {contraOfertas.filter(c => c.userId !== 1).length > 0 ? (
+        contraOfertas
+          .filter(c => c.userId !== 1)
+          .map((contraOferta) => {
             const user = users[contraOferta.userId]
 
             return (
@@ -92,7 +94,7 @@ export default function OfertasRecibidasPage() {
                 <div className="flex items-start mb-3">
                   <div className="flex-shrink-0 mr-3">
                     <Image
-                      src="/placeholder.svg?height=50&width=50"
+                      src="https://toppng.com/public/uploads/preview/ensando-especialmente-en-las-personas-con-movilidad-imagenes-de-personas-115628913400renbsc9lk.png"
                       alt={user ? `${user.name} ${user.surname}` : "Usuario"}
                       width={50}
                       height={50}
@@ -100,28 +102,28 @@ export default function OfertasRecibidasPage() {
                     />
                   </div>
                   <div>
-                    <h3 className="font-medium">{user ? `${user.name} ${user.surname}` : "Cargando..."}</h3>
+                    <h3 className="font-medium text-black">{user ? `${user.name} ${user.surname}` : "Cargando..."}</h3>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 mb-3 text-sm">
                   <div>
-                    <span className="font-medium">Monto:</span>
-                    <p>${contraOferta.new_price}</p>
+                    <span className="font-medium text-gray-600">Monto:</span>
+                    <p className="font-medium text-gray-600">${contraOferta.new_price}</p>
                   </div>
                   <div>
-                    <span className="font-medium">Duración:</span>
-                    <p>{contraOferta.duration}</p>
+                    <span className="font-medium text-gray-600">Duración:</span>
+                    <p className="font-medium text-gray-600">{contraOferta.duration}</p>
                   </div>
                   <div>
-                    <span className="font-medium">Fecha y hora:</span>
-                    <p>{new Date(contraOferta.date_available).toLocaleString()}</p>
+                    <span className="font-medium text-gray-600">Fecha y hora:</span>
+                    <p className="font-medium text-gray-600">{new Date(contraOferta.date_available).toLocaleString()}</p>
                   </div>
                 </div>
 
                 <div className="mb-3 text-sm">
-                  <span className="font-medium">Descripción:</span>
-                  <p>{contraOferta.description}</p>
+                  <span className="font-medium text-gray-600">Descripción:</span>
+                  <p className="font-medium text-gray-600">{contraOferta.description}</p>
                 </div>
 
                 <div className="flex justify-end">

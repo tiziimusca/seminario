@@ -7,7 +7,7 @@ export default function PerfilUsuarioPage() {
   const usuario = {
     id: 1,
     nombre: "Jesse Leos",
-    imagen: "/placeholder.svg?height=100&width=100",
+    imagen: "https://th.bing.com/th/id/R.7c8764880cfb470445950fbdaf9aede0?rik=1i%2fQrayLFQcoUg&pid=ImgRaw&r=0",
     fechaRegistro: "August 2024",
     correo: "jesseleos@gmail.com",
     calificacion: 5,
@@ -32,7 +32,7 @@ export default function PerfilUsuarioPage() {
       <div className="flex flex-col items-center mb-6">
         <div className="w-24 h-24 mb-2">
           <Image
-            src={usuario.imagen || "/placeholder.svg"}
+            src="https://th.bing.com/th/id/OIP.HBdW0soa6fQZVCR3DWGlqQHaG5?rs=1&pid=ImgDetMain"
             alt={usuario.nombre}
             width={100}
             height={100}
