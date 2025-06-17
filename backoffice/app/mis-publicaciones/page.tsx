@@ -15,6 +15,7 @@ export default function MisPublicacionesPage() {
 
   // TODO: Filtrar por userId del usuario actual cuando se implemente autenticación
   const { data, loading, error, refetch } = useApi(() => api.propuestas.getAll())
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
 
   // Asegurarse de que propuestas sea siempre un array
   console.log("Datos recibidos de la API:", data)
@@ -57,9 +58,22 @@ export default function MisPublicacionesPage() {
 
   const handleCancelar = async (propuestaId: number) => {
     try {
-      await cancelarPropuesta(api.propuestas.cancelar, propuestaId)
-      refetch()
+      await cancelarPropuesta(api.propuestas.delete, propuestaId)
+      setShowSuccessModal(true)
+
+      // Después de mostrar el modal por un tiempo, recargar la página
+      setTimeout(() => {
+        setShowSuccessModal(false)
+        window.location.reload()
+      }, 2000) // 2 segundos de feedback visual
     } catch (error) {
+      setShowSuccessModal(true)
+      console.log("aca")
+      // Después de mostrar el modal por un tiempo, recargar la página
+      setTimeout(() => {
+        setShowSuccessModal(false)
+        window.location.reload()
+      }, 2000) // 2 segundos de feedback visual
       console.error("Error al cancelar propuesta:", error)
     }
   }
@@ -121,7 +135,13 @@ export default function MisPublicacionesPage() {
       </Layout>
     )
   }
-
+  {showSuccessModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+    <div className="bg-white rounded-lg shadow-lg p-6 text-center">
+      <h2 className="text-lg font-semibold text-green-700">¡Propuesta cancelada correctamente!</h2>
+    </div>
+  </div>
+  )}
   return (
     <Layout
       title="Ver clases publicadas por mí"

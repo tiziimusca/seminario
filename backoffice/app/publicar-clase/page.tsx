@@ -44,19 +44,15 @@ export default function PublicarClasePage() {
         userId: 1, // TODO: Obtener del contexto de autenticación
         duration: isoDuration,
         state: "pendiente",
-        date_available: new Date(selectedDate).toISOString(),
+        date_available: new Date(formData.date_available).toISOString(),
       }
-      setShowSuccessModal(true)
-      setTimeout(() => {
-        router.push("/dashboard")
-      }, 5000)
+
       await mutate(api.propuestas.create, propuestaData)
-      router.push("/mis-publicaciones")
-    } catch (error) {
       setShowSuccessModal(true)
       setTimeout(() => {
-        router.push("/dashboard")
+        router.push("/mis-publicaciones")
       }, 5000)
+    } catch (error) {
       console.error("Error al publicar clase:", error)
     }
   }
