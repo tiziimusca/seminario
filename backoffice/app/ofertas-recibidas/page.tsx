@@ -15,7 +15,7 @@ export default function OfertasRecibidasPage() {
   const { data, loading, error, refetch } = useApi(() => api.contraOfertas.getAll({ state: "pendiente" }))
 
   // Asegurarse de que contraOfertas sea siempre un array
-  const contraOfertas = Array.isArray(data) ? data : []
+  const contraOfertas = data?.results ?? []
 
   // Debugging
   useEffect(() => {

@@ -47,7 +47,7 @@ export default function OfertaClasePage() {
         state: "pendiente",
       }
 
-      await mutate(api.contraOfertas.create, contraOfertaData)
+      await mutate((id, data) => api.propuestas.ofertar(id, data), propuestaId, contraOfertaData)
       router.push("/mis-ofertas")
     } catch (error) {
       console.error("Error al enviar oferta:", error)
@@ -70,6 +70,10 @@ export default function OfertaClasePage() {
         <div className="mb-6 p-4 bg-white rounded-lg shadow-sm">
           <h3 className="font-medium mb-2 text-black">Propuesta original:</h3>
           <p className="text-sm text-gray-600">
+            <strong>Título:</strong> {propuesta.title}
+          </p>
+
+          <p className="text-sm text-gray-600">
             <strong>Tema:</strong> {propuesta.tema}
           </p>
           <p className="text-sm text-gray-600">
@@ -77,6 +81,12 @@ export default function OfertaClasePage() {
           </p>
           <p className="text-sm text-gray-600">
             <strong>Descripción:</strong> {propuesta.description}
+          </p>
+          <p className="text-sm text-gray-600">
+            <strong>Fecha y hora:</strong> {new Date(propuesta.date_available).toLocaleString()}
+          </p>
+          <p className="text-sm text-gray-600">
+            <strong>Duración:</strong> {propuesta.duration} horas
           </p>
         </div>
       )}

@@ -2,75 +2,67 @@
 
 import { useState, useEffect } from "react"
 
-interface UseApiState<T> {
+export interface UseApiState<T> {
   data: T | null
   loading: boolean
   error: string | null
+  refetch: () => Promise<void>
 }
 
-export function useApi<T>(apiCall: () => Promise<T>, dependencies: any[] = []): UseApiState<T> {
-  const [state, setState] = useState<UseApiState<T>>({
-    data: null,
-    loading: true,
-    error: null,
-  })
+export function useApi<T>(
+  apiCall: () => Promise<T>,
+  dependencies: any[] = []
+): UseApiState<T> {
+  const [data, setData] = useState<T | null>(null)
+  const [loading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    let isMounted = true
-
-    const fetchData = async () => {
-      try {
-        setState((prev) => ({ ...prev, loading: true, error: null }))
-        const result = await apiCall()
-
-        // Debug
-        console.log("API result:", result)
-
-        if (isMounted) {
-          setState({ data: result, loading: false, error: null })
-        }
-      } catch (error) {
-        console.error("API error:", error)
-        if (isMounted) {
-          setState({
-            data: null,
-            loading: false,
-            error: error instanceof Error ? error.message : "Error desconocido",
-          })
-        }
-      }
-    }
-
-    fetchData()
-
-    return () => {
-      isMounted = false
-    }
-  }, dependencies)
-
-  return state
-}
-
-export function useApiMutation<T, P = any>() {
-  const [state, setState] = useState<UseApiState<T>>({
-    data: null,
-    loading: false,
-    error: null,
-  })
-
-  const mutate = async (apiCall: (params: P) => Promise<T>, params: P) => {
+  const fetchData = async () => {
     try {
-      setState({ data: null, loading: true, error: null })
-      const result = await apiCall(params)
-      setState({ data: result, loading: false, error: null })
-      return result
-    } catch (error) {
-      console.error("Mutation error:", error)
-      const errorMessage = error instanceof Error ? error.message : "Error desconocido"
-      setState({ data: null, loading: false, error: errorMessage })
-      throw error
+      setLoading(true)
+      setError(null)
+      const result = await apiCall()
+      setData(result)
+    } catch (err) {
+      console.error("API error:", err)
+      setError(err instanceof Error ? err.message : "Error desconocido")
+      setData(null)
+    } finally {
+      setLoading(false)
     }
   }
 
-  return { ...state, mutate }
+  useEffect(() => {
+    fetchData()
+  }, dependencies)
+
+  return { data, loading, error, refetch: fetchData }
 }
+
+
+export function useApiMutation<T, P = any>() {
+  const [data, setData] = useState<T | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const mutate = async (apiCall: (...args: any[]) => Promise<T>, ...params: any[]) => {
+    try {
+      setLoading(true)
+      setError(null)
+      const result = await apiCall(...params) // 👈 cambio clave
+      setData(result)
+      return result
+    } catch (err) {
+      console.error("Mutation error:", err)
+      const errorMessage = err instanceof Error ? err.message : "Error desconocido"
+      setError(errorMessage)
+      setData(null)
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return { data, loading, error, mutate }
+}
+

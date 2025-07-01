@@ -4,7 +4,7 @@ import Image from "next/image"
 interface UserCardProps {
   name: string
   image: string
-  details?: {
+  details: {
     label: string
     value: string
   }[]
@@ -13,23 +13,21 @@ interface UserCardProps {
 
 export function UserCard({ name, image, details, actions }: UserCardProps) {
   return (
-    <div className="bg-white rounded-lg p-4 mb-4 shadow-sm text-gray-800">
-      <div className="flex items-start">
-        <div className="flex-shrink-0 mr-4">
-          <Image src={image || "/placeholder.svg"} alt={name} width={50} height={50} className="rounded-full" />
+      <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200 space-y-3">
+        <div className="flex items-center gap-3">
+          <img src={image} alt={name} className="w-12 h-12 rounded-full object-cover" />
+          <h3 className="font-semibold text-black">{name}</h3>
         </div>
-        <div className="flex-grow">
-          <h3 className="font-medium text-lg">{name}</h3>
-          {details &&
-            details.map((detail, index) => (
-              <div key={index} className="mt-1 text-sm">
-                <span className="font-medium">{detail.label}: </span>
-                <span>{detail.value}</span>
-              </div>
-            ))}
-        </div>
+
+      <div className="text-sm text-gray-700 flex flex-wrap gap-x-6 gap-y-2">
+        {details.map((detail, i) => (
+          <div key={i} className="min-w-[180px]">
+            <strong>{detail.label}:</strong> {detail.value}
+          </div>
+        ))}
       </div>
-      {actions && <div className="mt-3 flex space-x-2">{actions}</div>}
-    </div>
-  )
-}
+
+        {actions && <div className="pt-3 flex justify-end">{actions}</div>}
+      </div>
+    )
+  }

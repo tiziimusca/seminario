@@ -6,12 +6,13 @@ import { Check, X, Star, Send, Trash, Edit, Eye } from "lucide-react"
 
 interface ButtonProps {
   children: React.ReactNode
-  variant?: "primary" | "danger" | "info"
-  icon?: "check" | "x" | "star" | "send" | "trash" | "edit" | "eye"
+  variant?: "primary" | "danger" | "info" | "success"
+  icon?: "check" | "x" | "star" | "send" | "trash" | "edit" | "eye" | "plus"
   onClick?: () => void
   type?: "button" | "submit" | "reset"
   className?: string
   fullWidth?: boolean
+  disabled?: string | boolean
 }
 
 export function Button({

@@ -1,8 +1,24 @@
+import { Button } from "@/components/button"
 import { Layout } from "@/components/layout"
 import { StarRating } from "@/components/star-rating"
+import  Link  from "next/link"
 import Image from "next/image"
+import { DollarSign, MessageSquare } from "lucide-react"
 
 export default function PerfilPropioPage() {
+  const menuItems = [ 
+    {  title: "Historial de pagos",
+      icon: <DollarSign className="w-6 h-6" />,
+      href: "/historial-pagos",
+      description: "Consulta tus pagos y cobros",
+    },
+        {
+      title: "Quejas y sugerencias",
+      icon: <MessageSquare className="w-6 h-6" />,
+      href: "/quejas-sugerencias",
+      description: "Envía tus comentarios",
+    },
+  ]
   const usuario = {
     id: 1,
     nombre: "Tiziano Musca",
@@ -70,6 +86,22 @@ export default function PerfilPropioPage() {
             </div>
           ))}
         </div>
+      </div>
+      <hr className="my-6 border-gray-300 w-full max-w-md" />
+      <div className="flex justify-center gap-4 flex-wrap mt-6"> 
+        {menuItems.map((item, index) => (            
+          <Link key={index} href={item.href}>
+            <div className="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow w-auto">
+              <div className="flex items-center mb-2">
+                <div className="w-10 h-10 rounded-full bg-[#1e2a32] flex items-center justify-center text-white mr-3">
+                  {item.icon}
+                </div>
+                <h3 className="font-medium text-lg text-gray-900">{item.title}</h3>
+              </div>
+              <p className="text-gray-600 text-sm">{item.description}</p>
+            </div>
+          </Link>
+        ))}
       </div>
     </Layout>
   )

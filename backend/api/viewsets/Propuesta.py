@@ -133,7 +133,7 @@ class PropuestaViewSet(viewsets.ModelViewSet):
         }
     )
     @action(detail=True, methods=['post'], url_path='cancelar', url_name='cancelar_propuesta')
-    def cancel(self):
+    def cancel(self, request, pk=None):
         obj = self.get_object()
         if obj.state in ["cancelado", "expirado"]:
             return Response(
@@ -151,7 +151,7 @@ class PropuestaViewSet(viewsets.ModelViewSet):
         request=ContraOfertaSerializer,
         responses=ContraOfertaSerializer
     )
-    @action(detail=True, methods=['post'], url_path='Ofertar')
+    @action(detail=True, methods=['post'], url_path='ofertar')
     def ofertar(self, request, pk=None):
         propuesta = self.get_object()
         

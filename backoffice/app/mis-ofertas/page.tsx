@@ -3,9 +3,11 @@
 import { Layout } from "@/components/layout"
 import { Button } from "@/components/button"
 import { useApi, useApiMutation } from "@/hooks/use-api"
-import { api, type User, type Propuesta } from "@/lib/api"
+import { api, type User, type Propuesta} from "@/lib/api"
 import Image from "next/image"
 import { useState, useEffect } from "react"
+import { stat } from "fs"
+import { ContraOferta } from "@/lib/api"
 
 export default function MisOfertasPage() {
   const [users, setUsers] = useState<Record<number, User>>({})
@@ -13,10 +15,10 @@ export default function MisOfertasPage() {
   const { mutate: cancelarOferta, loading: cancelando } = useApiMutation()
 
   // TODO: Filtrar por userId del usuario actual cuando se implemente autenticación
-  const { data, loading, error, refetch } = useApi(() => api.contraOfertas.getAll())
+  const { data, loading, error, refetch } = useApi(() => api.contraOfertas.getAll({state: "pendiente"}))
 
   // Asegurarse de que contraOfertas sea siempre un array
-  const contraOfertas = Array.isArray(data) ? data : []
+  const contraOfertas = data?.results ?? []
 
   // Debugging
   useEffect(() => {
@@ -78,7 +80,7 @@ export default function MisOfertasPage() {
 
   const handleCancelarOferta = async (contraOfertaId: number) => {
     try {
-      await cancelarOferta(api.contraOfertas.cancelar, contraOfertaId)
+      await cancelarOferta(api.contraOfertas.cancel, contraOfertaId)
       refetch()
     } catch (error) {
       console.error("Error al cancelar oferta:", error)
@@ -128,48 +130,44 @@ export default function MisOfertasPage() {
             const propuesta = propuestas[contraOferta.propuestaId]
             const user = propuesta ? users[propuesta.userId] : null
 
-            return (
-              <div key={contraOferta.id} className="bg-white rounded-lg p-4 shadow-sm">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 mr-3">
+              return (
+                <div key={contraOferta.id} className="bg-white rounded-xl border border-gray-200 p-6 shadow-md mb-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center gap-3">
                       <Image
-                        src="https://toppng.com/public/uploads/preview/ensando-especialmente-en-las-personas-con-movilidad-imagenes-de-personas-115628913400renbsc9lk.png"
+                        src="https://th.bing.com/th/id/OIP.HBdW0soa6fQZVCR3DWGlqQHaG5?rs=1&pid=ImgDetMain"
                         alt={user ? `${user.name} ${user.surname}` : "Usuario"}
-                        width={50}
-                        height={50}
+                        width={48}
+                        height={48}
                         className="rounded-full"
                       />
+                      <h3 className="text-lg font-semibold text-gray-900">{user ? `${user.name} ${user.surname}` : "Cargando..."}</h3>
+                    </div>
+                    <span
+                      className={`text-xs font-semibold px-3 py-1 rounded-full ${getEstadoColor(contraOferta.state)} bg-opacity-20 border border-current`}>
+                      {contraOferta.state.charAt(0).toUpperCase() + contraOferta.state.slice(1)}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 text-sm mb-3">
+                    <div>
+                      <span className="font-medium text-black">💰 Monto</span>
+                      <p className="text-sm text-gray-600">${contraOferta.new_price}</p>
                     </div>
                     <div>
-                      <h3 className="font-medium text-black">{user ? `${user.name} ${user.surname}` : "Cargando..."}</h3>
-                      {propuesta && <p className="text-sm text-gray-600">Propuesta: {propuesta.tema}</p>}
+                      <span className="font-medium text-black">⏱ Duración</span>
+                      <p className="text-sm text-gray-600">{contraOferta.duration}</p>
+                    </div>
+                    <div>
+                      <span className="font-medium text-black">📅 Fecha límite</span>
+                      <p className="text-sm text-gray-600">{new Date(contraOferta.date_available).toLocaleDateString()}</p>
                     </div>
                   </div>
-                  <div className={`text-sm font-medium ${getEstadoColor(contraOferta.state)}`}>
-                    {contraOferta.state.charAt(0).toUpperCase() + contraOferta.state.slice(1)}
-                  </div>
-                </div>
 
-                <div className="grid grid-cols-3 gap-2 mb-3 text-sm">
-                  <div>
-                    <span className="font-medium text-gray-600">Monto:</span>
-                    <p className="font-medium text-gray-600">${contraOferta.new_price}</p>
+                  <div className="text-sm mb-4">
+                    <span className="font-medium text-black">📝 Descripción</span>
+                    <p className="text-sm text-gray-600">{contraOferta.description}</p>
                   </div>
-                  <div>
-                    <span className="font-medium text-gray-600">Duración:</span>
-                    <p className="font-medium text-gray-600">{contraOferta.duration}</p>
-                  </div>
-                  <div>
-                    <span className="font-medium text-gray-600">Fecha y hora:</span>
-                    <p className="font-medium text-gray-600">{new Date(contraOferta.date_available).toLocaleString()}</p>
-                  </div>
-                </div>
-
-                <div className="mb-3 text-sm">
-                  <span className="font-medium text-gray-600">Descripción:</span>
-                  <p className="font-medium text-gray-600">{contraOferta.description}</p>
-                </div>
 
                 {contraOferta.state === "pendiente" && (
                   <div>

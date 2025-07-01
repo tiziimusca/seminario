@@ -14,7 +14,7 @@ export default function HistorialPagosPage() {
   const { data, loading, error } = useApi(() => api.pagos.getAll())
 
   // Asegurarse de que pagos sea siempre un array
-  const pagos = Array.isArray(data) ? data : []
+  const pagos = data?.results ?? []
 
   // Debugging
   useEffect(() => {

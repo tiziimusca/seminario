@@ -117,7 +117,7 @@ class ContraOfertaViewSet(viewsets.ModelViewSet):
         }
     )
     @action(detail=True, methods=["post"], url_path="cancelar", url_name="cancelar_contraoferta")
-    def cancelar_contraOferta(self):
+    def cancelar_contraOferta(self, request, pk=None):
         contraOferta = self.get_object()
         if contraOferta.state in ["cancelado", "expirado"]:
             return Response(
