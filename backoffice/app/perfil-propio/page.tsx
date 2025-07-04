@@ -21,11 +21,12 @@ export default function PerfilPropioPage() {
   ]
   const usuario = {
     id: 1,
-    nombre: "Tiziano Musca",
+    nombre: "Juan Manuel Gardon",
     imagen: "https://th.bing.com/th/id/R.7c8764880cfb470445950fbdaf9aede0?rik=1i%2fQrayLFQcoUg&pid=ImgRaw&r=0",
     fechaRegistro: "August 2024",
-    correo: "tizianomusca@gmail.com",
+    correo: "juanmaagardon@gmail.com",
     calificacion: 4.6,
+    RangoHorario: "Martes y jueves de 17:00 - 21:00",
     resenas: [
       {
         id: 1,

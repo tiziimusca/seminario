@@ -164,7 +164,7 @@ const getEstadoColor = (estado: string) => {
             </Link>
           </div>
         </div>
-      <div className="space-y-4">
+      <div className="py-4 px-8">
         {propuestas.filter(p => p.userId === 1).length > 0 ? (
           propuestas
             .filter(p => p.userId === 1)
@@ -172,7 +172,7 @@ const getEstadoColor = (estado: string) => {
             const user = users[propuesta.userId]
             if (propuesta.state === "pendiente" || propuesta.state === "ofertada") {
               return (
-                <div key={propuesta.id} className="bg-white rounded-xl border border-gray-200 p-6 shadow-md mb-6">
+                <div key={propuesta.id} className="bg-white rounded-xl border border-gray-200 p-6 shadow-md mb-6 w-[90%] mx-auto">
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex items-center gap-3">
                       <Image

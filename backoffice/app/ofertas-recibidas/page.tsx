@@ -88,9 +88,10 @@ export default function OfertasRecibidasPage() {
           .filter(c => c.userId !== 1)
           .map((contraOferta) => {
             const user = users[contraOferta.userId]
+            console.log("User ID:", contraOferta.userId, "Usuario encontrado:", users[contraOferta.userId])
 
             return (
-              <div key={contraOferta.id} className="bg-white rounded-lg p-4 shadow-sm">
+              <div key={contraOferta.id} className="bg-white rounded-lg p-4 shadow-sm w-[90%] mx-auto">
                 <div className="flex items-start mb-3">
                   <div className="flex-shrink-0 mr-3">
                     <Image

@@ -131,7 +131,7 @@ export default function MisOfertasPage() {
             const user = propuesta ? users[propuesta.userId] : null
 
               return (
-                <div key={contraOferta.id} className="bg-white rounded-xl border border-gray-200 p-6 shadow-md mb-6">
+                <div key={contraOferta.id} className="bg-white rounded-xl border border-gray-200 p-6 shadow-md mb-6 w-[90%] mx-auto">
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex items-center gap-3">
                       <Image
